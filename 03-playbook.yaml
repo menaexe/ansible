@@ -1,6 +1,7 @@
 ---
 - name: Nginx Install and Run
   hosts: web
+  become: true  # Ensure the playbook runs with elevated sudo privileges
   tasks:
     - name: Install nginx
       ansible.builtin.package:
