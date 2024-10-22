@@ -1,4 +1,4 @@
----
+
 - name: Nginx Install and Run
   hosts: web
   become: yes  # Ensure the playbook runs with elevated sudo privileges
