@@ -1,7 +1,15 @@
-
+#04-variable.yaml
+---
 - name: Variables to Print
   hosts: web
+  vars:
+    COURSE: "DevOps with AWS"
+    DURATION: "120 HRS"
+    TRAINER: "Siva"
   tasks:
     - name: Print the Info
       ansible.builtin.debug:
-        msg: "Hi, I'm learning DevOps, the duration is: 120Hr. Trainer is: Siva"
+        msg:
+          Hi, I'm learning {{ COURSE }}
+          Duration is: {{ DURATION }}
+          Trainer is: {{ TRAINER }}
