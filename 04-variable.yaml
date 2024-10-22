@@ -1,4 +1,3 @@
-#04-variable.yaml
 ---
 - name: Variables to Print
   hosts: web
@@ -9,4 +8,7 @@
   tasks:
     - name: Print the Info
       ansible.builtin.debug:
-        msg: Hi, I'm learning {{COURSE}} Duration is: {{ DURATION }} Trainer is: {{ TRAINER }}
+        msg: |
+          Hi, I'm learning {{ COURSE }}
+          Duration is: {{ DURATION }}
+          Trainer is: {{ TRAINER }}
