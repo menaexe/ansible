@@ -1,0 +1,14 @@
+---
+# Name of the playbook
+- name: Ping the server
+
+  # Target hosts (group or individual hosts defined in the inventory file)
+  hosts: web  # Specify the group or host(s) Ansible will connect to
+
+  # Become user (optional, used if tasks need privilege escalation)
+  become: true
+
+  # List of tasks to be executed
+  tasks:
+    - name: Ping the server
+      ansible.builtin.ping:
