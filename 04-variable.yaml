@@ -1,0 +1,7 @@
+
+- name: Variables to Print
+  hosts: web
+  tasks:
+    - name: Print the Info
+      ansible.builtin.debug:
+        msg: "Hi, I'm learning DevOps, the duration is: 120Hr. Trainer is: Siva"
