@@ -2,10 +2,10 @@
 - name: Variables to Print
   hosts: web
 
-  vars:
-    COURSE: "DevOps with AWS from PLAY level"
-    DURATION: "120HRS"
-    TRAINER: "Sivakumar Reddy M"
+  # vars:
+  #   COURSE: "DevOps with AWS from PLAY level"
+  #   DURATION: "120HRS"
+  #   TRAINER: "Sivakumar Reddy M"
 #vars_files:
   #-vars.yaml
  #vars_prompt:
