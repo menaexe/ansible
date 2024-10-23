@@ -7,11 +7,11 @@
     DURATION: "120HRS"
     TRAINER: "Sivakumar Reddy M"
 #vars_files:
-  -vars.yaml
+  #-vars.yaml
  #vars_prompt:
-    - name: COURSE
-      prompt: "Please enter the course name"
-      private: false  # Not confidential input
+   # - name: COURSE
+    #  prompt: "Please enter the course name"
+     # private: false  # Not confidential input
 
   tasks:
     - name: Print the Information
