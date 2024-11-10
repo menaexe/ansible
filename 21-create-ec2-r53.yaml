@@ -12,7 +12,7 @@
       - mysql # Database instance
       - backend # Backend application instance
       - frontend # Frontend application instance
-    zone: daws81s.online # The Route 53 DNS zone (domain name) where records will be created
+    zone: menaexe.online # The Route 53 DNS zone (domain name) where records will be created
 
   tasks:
     # Task 1: Install boto3 and botocore, libraries required to interact with AWS
