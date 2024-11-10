@@ -5,8 +5,8 @@
   # Define variables that will be used throughout the playbook
   # These could also be stored in a separate file for better organization
   vars:
-    subnet_id: "subnet-09863c54177764565" # The specific subnet ID in which EC2 instances will be launched (replace with actual ID)
-    sg_id: "sg-09a300a3729062c5a" # Security Group ID used to control access to the instances
+    subnet_id: "subnet-0ffc94b9c5128b35f" # The specific subnet ID in which EC2 instances will be launched (replace with actual ID)
+    sg_id: "sg-01c7763837ce68d69" # Security Group ID used to control access to the instances
     ami_id: "ami-09c813fb71547fc4f" # Amazon Machine Image (AMI) ID that determines the OS and software on instances
     instances: # List of names for the EC2 instances to be created
       - mysql # Database instance
