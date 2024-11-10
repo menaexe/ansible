@@ -2,14 +2,39 @@
   hosts: local
   connection: local
   tasks:
-  - name: execute the command
-    ansible.builtin.shell: ls -ltr > /tmp/output.txt # login to the server and execute command inside
-    # command module, just issues the command
 
-  - name: check the process
+  # Task 1: Execute a command using the 'shell' module
+  - name: execute the command
+    ansible.builtin.shell: ls -ltr > /tmp/output.txt
+    # Explanation:
+    # The 'shell' module allows you to execute commands within a shell
+    # environment.
+    # This means you can use shell-specific syntax like redirection (>),
+    # pipes (|), and wildcards.
+    # Here, 'ls -ltr > /tmp/output.txt' lists files in long format,
+    # sorted by time, and redirects output to /tmp/output.txt.
+    # The 'command' module cannot perform this redirection, as it does not
+    # execute in a shell.
+
+  # Task 2: Check a running process with 'shell' (using pipes)
+  - name: check the process (using shell)
     ansible.builtin.shell: ps -ef | grep ssh
     register: output
+    # Explanation:
+    # The 'shell' module here executes 'ps -ef | grep ssh' to list
+    # processes and filter for 'ssh'.
+    # The command uses a pipe (|), which only works in the 'shell' module 
+    #since it provides a full shell environment.
+    # The output is registered in the 'output' variable to be used later
+    # if needed.
 
-  - name: check the process
+  # Task 3: Check a running process with 'command' (no pipes or special shell syntax allowed)
+  - name: check the process (using command)
     ansible.builtin.command: ps -ef | grep ssh
     register: output
+    # Explanation:
+    # The 'command' module runs commands without invoking a shell.
+    # This means shell-specific syntax like pipes (|) or redirection (>) will cause errors.
+    # In this case, the command 'ps -ef | grep ssh' would fail here because 'command' does not support pipes.
+    # The 'command' module is preferred when you do not need shell features for added security and efficiency.
+

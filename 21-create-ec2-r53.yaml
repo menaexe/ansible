@@ -1,60 +1,73 @@
-- name: create ec2 and r53 records
-  hosts: local
-  connection: local
-  # assignment
-  # move this to vars_files
+- name: create ec2 and r53 records # Define the playbook's purpose
+  hosts: local # Specify that this playbook will run on the local machine
+  connection: local # Use a local connection to execute commands on the local machine
+
+  # Define variables that will be used throughout the playbook
+  # These could also be stored in a separate file for better organization
   vars:
-    subnet_id: "subnet-09863c54177764565" # replace with your subnet id
-    sg_id: "sg-09a300a3729062c5a"
-    ami_id: "ami-09c813fb71547fc4f"
-    instances:
-    - mysql
-    - backend
-    - frontend
-    zone: daws81s.online
+    subnet_id: "subnet-09863c54177764565" # The specific subnet ID in which EC2 instances will be launched (replace with actual ID)
+    sg_id: "sg-09a300a3729062c5a" # Security Group ID used to control access to the instances
+    ami_id: "ami-09c813fb71547fc4f" # Amazon Machine Image (AMI) ID that determines the OS and software on instances
+    instances: # List of names for the EC2 instances to be created
+      - mysql # Database instance
+      - backend # Backend application instance
+      - frontend # Frontend application instance
+    zone: daws81s.online # The Route 53 DNS zone (domain name) where records will be created
+
   tasks:
-  - name: ansible to install boto3 and botocore
-    ansible.builtin.pip:
-      name:
-      - boto3
-      - botocore
-      executable: pip3.9
-  - name: create ec2 instance
-    amazon.aws.ec2_instance:
-      name: "{{ item }}"
-      vpc_subnet_id: "{{ subnet_id }}"
-      instance_type: "t3.micro"
-      security_group: "{{ sg_id }}"
-      image_id: "{{ ami_id }}"
-    loop: "{{ instances }}"
-    register: ec2_instances
+    # Task 1: Install boto3 and botocore, libraries required to interact with AWS
+    - name: ansible to install boto3 and botocore
+      ansible.builtin.pip:
+        name:
+          - boto3 # Boto3 library for AWS operations
+          - botocore # Botocore library, a dependency of boto3
+        executable: pip3.9 # Specify the Python pip version to use
 
-  - name: print the output
-    ansible.builtin.debug:
-      msg: "{{ ec2_instances }}"
+    # Task 2: Create EC2 instances based on the provided instance names
+    - name: create ec2 instance
+      amazon.aws.ec2_instance:
+        name: "{{ item }}" # Use the name from the 'instances' list (e.g., mysql, backend, frontend)
+        vpc_subnet_id: "{{ subnet_id }}" # Place each instance in the specified subnet
+        instance_type: "t3.micro" # Specify the instance type (e.g., t3.micro)
+        security_group: "{{ sg_id }}" # Apply the specified security group to control instance access
+        image_id: "{{ ami_id }}" # Use the specified AMI to define the instance's OS and software
+      loop: "{{ instances }}" # Loop over each item in 'instances' list to create separate instances
+      register: ec2_instances # Register the output data (e.g., IP addresses) from this task into the variable 'ec2_instances'
 
-  #private IP R53
-  - name: create r53 private records
-    amazon.aws.route53:
-      state: present
-      zone: "{{ zone }}"
-      record: "{{ item.item }}.{{ zone }}" #mysql.daws81s.online
-      type: A
-      ttl: 1
-      value: "{{ item.instances[0].private_ip_address }}"
-      wait: true
-      overwrite: true
-    loop: "{{ ec2_instances.results }}"
+    # Task 3: Print the details of created EC2 instances for debugging purposes
+    - name: print the output
+      ansible.builtin.debug:
+        msg: "{{ ec2_instances }}" # Output contains instance details like instance ID, IP address, etc.
 
-  - name: create r53 public record for frontend
-    amazon.aws.route53:
-      state: present
-      zone: "{{ zone }}"
-      record: "{{ zone }}" #daws81s.online
-      type: A
-      ttl: 1
-      value: "{{ item.instances[0].public_ip_address }}"
-      wait: true
-      overwrite: true
-    loop: "{{ ec2_instances.results }}"
-    when: item.item == "frontend" #when keyword should not have {{}}
+    # Task 4: Create private Route 53 records using each instance’s private IP address
+    - name: create r53 private records
+      amazon.aws.route53:
+        state: present # Ensure the DNS record exists
+        zone: "{{ zone }}" # Specify the DNS zone (e.g., daws81s.online)
+        record: "{{ item.item }}.{{ zone }}" # Format the record name (e.g., mysql.daws81s.online)
+        type: A # Define record type as 'A' (maps a name to an IP address)
+        ttl: 1 # Set the Time-To-Live for DNS record caching
+        value: "{{ item.instances[0].private_ip_address }}" # Use the private IP of the instance for internal network routing
+        wait: true # Wait for the record creation to complete
+        overwrite: true # Overwrite existing record if already present
+      loop: "{{ ec2_instances.results }}" # Loop over each result in 'ec2_instances' to create a private DNS record for each instance
+
+    # Task 5: Create a public Route 53 DNS record pointing to the 'frontend' instance’s public IP
+    - name: create r53 public record for frontend
+      amazon.aws.route53:
+        state: present # Ensure the DNS record exists
+        zone: "{{ zone }}" # Specify the DNS zone
+        record: "{{ zone }}" # Use the main zone name as the
+        # public record (e.g., daws81s.online)
+        type: A # Define record type as 'A'
+        ttl: 1 # Set Time-To-Live for DNS record caching
+        value: "{{ item.instances[0].public_ip_address }}" 
+        # Use the public IP for internet access to 'frontend' instance
+        wait: true # Wait for the record creation to complete
+        overwrite: true
+         # Overwrite existing record if already present
+      loop: "{{ ec2_instances.results }}" # Loop over each instance result,
+      # though only 'frontend' will be used for this record
+      when: item.item == "frontend"
+       # Create this public DNS record only if the instance name 
+       #is 'frontend'

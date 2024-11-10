@@ -53,3 +53,11 @@
       myip: "356.168.1.1"
     ansible.builtin.debug:
       msg: "{{ myip | ansible.utils.ipv4 }}"
+
+    #  # python library pip3.9 install netaddr
+    #  #ansible --version
+    #  #ansible-playbook -i inventory.ini 19-filters.yaml
+    #  #if not valid msg = false
+    #  #this is all about ansible filters and functions
+    #  ansible.builtin.shell
+    #  ansible.builtin.command

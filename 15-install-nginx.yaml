@@ -1,19 +1,23 @@
-- name: install nginx
+---
+- name: Install nginx
   become: yes
   hosts: web
   tasks:
-  - name: print the stats
-    ansible.builtin.debug:
-      msg: "{{ ansible_facts }}"
-  
-  - name: install nginx if redhat
-    ansible.builtin.dnf:
-      name: nginx
-      state: present
-    when: ansible_os_family == "RedHat"
+    - name: Print the system facts
+      ansible.builtin.debug:
+        msg: "{{ ansible_facts }}" 
+         # Prints all gathered facts about the system
 
-  - name: install nginx if Debian
-    ansible.builtin.apt:
-      name: nginx
-      state: present
-    when: ansible_os_family == "Debian"
+    - name: Install nginx if RedHat
+      ansible.builtin.dnf:
+        name: nginx
+        state: present
+      when: ansible_os_family == "RedHat"  
+      # Only executes if the system is RedHat-based (e.g., RHEL, CentOS)
+
+    - name: Install nginx if Debian
+      ansible.builtin.apt:
+        name: nginx
+        state: present
+      when: ansible_os_family == "Debian"
+      # Only executes if the system is Debian-based (e.g., Debian, Ubuntu)
